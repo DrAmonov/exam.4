@@ -6,29 +6,34 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/config.js');
 
 const loginAdmin = async (req, res, next) => {
-	const { pos_ref_id, first_name, last_name, gender, contact, email } =
-		req.body;
+	const { first_name, last_name, contact } = req.body;
 
 	try {
-		const admin = await User.findOne();
+		const user = await User.findOne({
+			first_name: first_name,
+			last_name: last_name,
+		});
 
-		if (admin.last_name != last_name)
-			res.status(404).send({ message: 'smth wrong' });
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' });
+		}
 
-		const isMatch = (await admin.contact) === contact;
+		const isMatch = user.contact === contact;
 		if (!isMatch) {
 			return res.status(401).json({ message: 'Invalid credentials' });
 		}
 
 		const payload = {
 			user: {
-				id: admin._id,
-				role: admin.pos_ref_id,
+				id: user._id,
+				role: user.pos_ref_id,
 			},
 		};
 
 		jwt.sign(payload, 'JWT_SECRET', { expiresIn: '1h' }, (error, token) => {
-			if (error) throw error;
+			if (error) {
+				return res.status(500).json({ error: 'Error generating token' });
+			}
 			res.json({ token });
 		});
 	} catch (error) {

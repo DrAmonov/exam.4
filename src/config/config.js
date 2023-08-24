@@ -1,6 +1,7 @@
 module.exports = {
 	// MongoDB connection URI
-	mongoURI: 'mongodb://127.0.0.1:27017/crm_system',
+	mongoURI:
+		'mongodb+srv://temurxonamonov:a4SKA0GfUFE2t0gS@cluster0.9zzptki.mongodb.net/crm-system',
 
 	// JWT secret key
 	jwtSecret: 'your_jwt_secret_key',
